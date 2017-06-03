@@ -21,7 +21,7 @@ users = defaultdict(lambda: FriendStatus.UNKNOWN)
 
 
 def check_self_intro(intro: str) -> bool:
-    return len(intro) > 5 and '我' in intro
+    return len(intro) > 5
 
 
 def send_group_invitation(msg) -> None:
@@ -34,9 +34,10 @@ def add_friends(msg):
     itchat.add_friend(**msg['Text'])
 
 
+
 @itchat.msg_register(TEXT, isFriendChat=True)
 def text_reply(msg):
-    if TRIGGER_WORDS in msg.Content:
+    if TRIGGER_WORDS.lower() in msg.Content.lower():
         if users[msg.FromUserName] == FriendStatus.INVITE_SENT:
             # the user sent trigger words again but the invitation already sent
             send_group_invitation(msg)
