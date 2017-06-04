@@ -7,6 +7,7 @@ from itchat.content import TEXT, FRIENDS
 GROUP_NAME = '中德人工智能协会'
 TRIGGER_WORDS = ['我要进AI群', '我想进AI群', '拉进AI群']
 WARN_FWD = '注意，你的自我介绍将发送给其他群成员。'
+AFTER_ADD = '若要申请进群请回复 我想进AI群'
 FIRST_REPLY = '您好%s，欢迎申请加入%s！请您先做个自我介绍，随后我会将您加入到群聊中。' + WARN_FWD
 INTRO_FAILED = '为了保证群聊质量，请您认真做一下自我介绍。' + WARN_FWD
 GOODBYE = '好的%s！我已向您发送了群聊邀请，请做确认。' \
@@ -50,6 +51,7 @@ def intro_upcomming_member(user: str, intro: str) -> None:
 @itchat.msg_register(FRIENDS)
 def add_friends(msg):
     itchat.add_friend(**msg['Text'])
+    itchat.send_msg(msg=AFTER_ADD, toUserName=msg.FromUserName)
 
 
 @itchat.msg_register(TEXT, isFriendChat=True)
@@ -58,7 +60,7 @@ def text_reply(msg):
         if users[msg.FromUserName] == FriendStatus.INVITE_SENT:
             # the user sent trigger words again but the invitation already sent
             send_group_invitation(msg)
-            return GOODBYE % msg.User.NickName
+            return GOODBYE % (msg.User.NickName, GROUP_NAME)
         else:
             users[msg.FromUserName] = FriendStatus.SELF_INTRO
             return FIRST_REPLY % (msg.User.NickName, GROUP_NAME)
@@ -66,11 +68,11 @@ def text_reply(msg):
         if check_self_intro(msg.Content):
             users[msg.FromUserName] = FriendStatus.INVITE_SENT
             send_group_invitation(msg)
-            intro_upcomming_member(msg.FromUserName, msg.Content)
-            return GOODBYE % msg.User.NickName
+            intro_upcomming_member(msg.User.NickName, msg.Content)
+            return GOODBYE % (msg.User.NickName, GROUP_NAME)
         else:
             return INTRO_FAILED
 
 
-itchat.auto_login(hotReload=True, enableCmdQR=2)
+itchat.auto_login(enableCmdQR=2)
 itchat.run()
