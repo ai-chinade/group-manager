@@ -63,7 +63,7 @@ def text_reply(msg):
         else:
             users[msg.FromUserName] = FriendStatus.SELF_INTRO
             itchat.send_msg(msg=FIRST_REPLY % (msg.User.NickName, GROUP_NAME), toUserName=msg.FromUserName)
-    if users[msg.FromUserName] == FriendStatus.SELF_INTRO:
+    elif users[msg.FromUserName] == FriendStatus.SELF_INTRO:
         if check_self_intro(msg.Content):
             users[msg.FromUserName] = FriendStatus.INVITE_SENT
             send_group_invitation(msg)
