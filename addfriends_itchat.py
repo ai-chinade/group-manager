@@ -73,5 +73,5 @@ def text_reply(msg):
             itchat.send_msg(msg=INTRO_FAILED, toUserName=msg.FromUserName)
 
 
-itchat.auto_login()
+itchat.auto_login(enableCmdQR=2)
 itchat.run()
