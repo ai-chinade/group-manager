@@ -51,7 +51,6 @@ def intro_upcomming_member(user: str, intro: str) -> None:
 @itchat.msg_register(FRIENDS)
 def add_friends(msg):
     itchat.add_friend(**msg['Text'])
-    itchat.send_msg(msg=AFTER_ADD, toUserName=msg.FromUserName)
 
 
 @itchat.msg_register(TEXT, isFriendChat=True)
@@ -60,19 +59,19 @@ def text_reply(msg):
         if users[msg.FromUserName] == FriendStatus.INVITE_SENT:
             # the user sent trigger words again but the invitation already sent
             send_group_invitation(msg)
-            return GOODBYE % (msg.User.NickName, GROUP_NAME)
+            itchat.send_msg(msg=GOODBYE % (msg.User.NickName, GROUP_NAME), toUserName=msg.FromUserName)
         else:
             users[msg.FromUserName] = FriendStatus.SELF_INTRO
-            return FIRST_REPLY % (msg.User.NickName, GROUP_NAME)
+            itchat.send_msg(msg=FIRST_REPLY % (msg.User.NickName, GROUP_NAME), toUserName=msg.FromUserName)
     if users[msg.FromUserName] == FriendStatus.SELF_INTRO:
         if check_self_intro(msg.Content):
             users[msg.FromUserName] = FriendStatus.INVITE_SENT
             send_group_invitation(msg)
             intro_upcomming_member(msg.User.NickName, msg.Content)
-            return GOODBYE % (msg.User.NickName, GROUP_NAME)
+            itchat.send_msg(msg=GOODBYE % (msg.User.NickName, GROUP_NAME), toUserName=msg.FromUserName)
         else:
-            return INTRO_FAILED
+            itchat.send_msg(msg=INTRO_FAILED, toUserName=msg.FromUserName)
 
 
-itchat.auto_login(enableCmdQR=2)
+itchat.auto_login()
 itchat.run()
