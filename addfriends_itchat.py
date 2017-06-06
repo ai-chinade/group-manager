@@ -35,7 +35,14 @@ def check_trigger_words(msg: str) -> bool:
 
 
 def check_self_intro(intro: str) -> bool:
-    return len(intro) > 5
+    if len(intro) < 20:
+        return False
+    keywds = ['hi', 'hello', 'hallo', '大家好',
+              '我是', '我叫', '我']
+    for wd in keywds:
+        if wd.lower() in intro:
+            return True
+    return False
 
 
 def send_group_invitation(msg) -> None:
