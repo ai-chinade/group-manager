@@ -16,7 +16,7 @@ GOODBYE = '好的%s！我已向您发送了群聊邀请，请做确认。' \
           '如果您希望运维，投稿，赞助或合作，我们热烈欢迎！请与我私信联系，谢谢！' \
           '最后，请牢记我们的域名 aichina.de 祝您在群里结识更多的朋友！'
 GROUP_INTRO = '请大家热烈欢迎即将加入群的%s, ta是：%s'
-
+INTRO_KEYWORDS = ['hi', 'hello', 'hallo', '大家好', '我是', '我叫', '我']
 
 class FriendStatus(Enum):
     UNKNOWN = 'unknown friend'
@@ -35,7 +35,11 @@ def check_trigger_words(msg: str) -> bool:
 
 
 def check_self_intro(intro: str) -> bool:
-    return len(intro) > 5
+    if len(intro) < 20:
+      for wd in INTRO_KEYWORDS:
+        if wd.lower() in intro:
+          return True
+    return False
 
 
 def send_group_invitation(msg) -> None:
@@ -55,14 +59,10 @@ def add_friends(msg):
 
 @itchat.msg_register(TEXT, isFriendChat=True)
 def text_reply(msg):
-    if check_trigger_words(msg.Content):
-        if users[msg.FromUserName] == FriendStatus.INVITE_SENT:
-            # the user sent trigger words again but the invitation already sent
-            send_group_invitation(msg)
-            itchat.send_msg(msg=GOODBYE % (msg.User.NickName, GROUP_NAME), toUserName=msg.FromUserName)
-        else:
-            users[msg.FromUserName] = FriendStatus.SELF_INTRO
-            itchat.send_msg(msg=FIRST_REPLY % (msg.User.NickName, GROUP_NAME), toUserName=msg.FromUserName)
+    if users[msg.FromUserName] == FriendStatus.UNKNOWN:
+      if check_trigger_words(msg.Content):
+        users[msg.FromUserName] = FriendStatus.SELF_INTRO
+        itchat.send_msg(msg=FIRST_REPLY % (msg.User.NickName, GROUP_NAME), toUserName=msg.FromUserName)
     elif users[msg.FromUserName] == FriendStatus.SELF_INTRO:
         if check_self_intro(msg.Content):
             users[msg.FromUserName] = FriendStatus.INVITE_SENT
@@ -71,6 +71,10 @@ def text_reply(msg):
             itchat.send_msg(msg=GOODBYE % (msg.User.NickName, GROUP_NAME), toUserName=msg.FromUserName)
         else:
             itchat.send_msg(msg=INTRO_FAILED, toUserName=msg.FromUserName)
+    elif users[msg.FromUserName] == FriendStatus.INVITE_SENT:
+        # the user sent trigger words again but the invitation already sent
+        send_group_invitation(msg)
+        itchat.send_msg(msg=GOODBYE % (msg.User.NickName, GROUP_NAME), toUserName=msg.FromUserName)
 
 
 itchat.auto_login(enableCmdQR=2)
