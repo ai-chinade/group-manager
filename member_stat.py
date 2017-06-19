@@ -1,3 +1,4 @@
+import json
 import re
 from collections import Counter
 
@@ -32,3 +33,15 @@ for name in name_counter.keys():
 
 type_counter = Counter(tmp1)
 inst_counter = Counter(tmp2)
+
+results = {
+    'cityDist': city_counter,
+    'sexDist': sex_counter,
+    'signatureDist': signature_counter,
+    'nameDist': name_counter,
+    'typeDist': type_counter,
+    'instDist': inst_counter
+}
+
+with open('group_summary.json', 'w') as f:
+    f.write(json.dumps(results, ensure_ascii=False))
