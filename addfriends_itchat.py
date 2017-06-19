@@ -11,8 +11,9 @@ WARN_FWD = '注意，你的自我介绍将发送给其他群成员。'
 AFTER_ADD = '若要申请进群请回复 我想进AI群'
 FIRST_REPLY = '您好%s，欢迎申请加入%s！请您先做个自我介绍，随后我会将您加入到群聊中。\n' \
               '请在5分钟之内完成介绍，否则需要重新输入"我要进AI群"激活入群步骤。\n' \
-              '此条为机器人发送，请直接开始自我介绍，不要说"好的、谢谢、知道了"等客套话。' + WARN_FWD
-INTRO_FAILED = '为了保证群聊质量，请您认真做一下自我介绍。' + WARN_FWD
+              '请使用文字自我介绍，并包含"我是"关键字。\n' \
+              '此条为机器人发送，所以不需要回复"好的、谢谢、知道了"等客套话。' + WARN_FWD
+INTRO_FAILED = '为了保证群聊质量，请您认真做一下自我介绍。注意包含"我是"关键字。' + WARN_FWD
 GOODBYE = '好的%s！我已向您发送了群聊邀请，请做确认。' \
           '%s是中国驻德使馆教育处认可的组织。' \
           '请保持良好的社区氛围，多发原创内容增进讨论, 严禁发广告及无关内容。' \
@@ -91,5 +92,5 @@ def text_reply(msg):
             itchat.send_msg(msg=GOODBYE % (msg.User.NickName, GROUP_NAME), toUserName=msg.FromUserName)
 
 
-itchat.auto_login(hotReload=True, enableCmdQR=2)
+itchat.auto_login(hotReload=True)
 itchat.run()
