@@ -43,5 +43,5 @@ results = {
     'instDist': inst_counter
 }
 
-with open('group_summary.json', 'w') as f:
+with open('static/group_summary.json', 'w') as f:
     f.write(json.dumps(results, ensure_ascii=False))
